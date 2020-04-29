@@ -47,7 +47,7 @@
 #define HW_ADD_LENGTH 6
 
 uint32_t sum;
-
+bool    dhcpEnabled;
 
 // ------------------------------------------------------------------------------
 //  Global Structures

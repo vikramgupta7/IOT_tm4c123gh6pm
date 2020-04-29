@@ -114,10 +114,10 @@ void makeDhcpDiscoverPacket(uint8_t packet[])
 
 uint8_t etherIsDhcp(uint8_t packet[])
 {
-
-    //ok = 1 reply
-    //ok = 2 offer
-    //ok = 3 ack
+    //Returns the following values.
+    //ok = 1 DHCP packet.
+    //ok = 2 DHCP offer.
+    //ok = 3 DHCP ACK.
     etherFrame* ether = (etherFrame*)packet;
     ipFrame* ip = (ipFrame*)&ether->data;
     udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
@@ -137,81 +137,87 @@ uint8_t etherIsDhcp(uint8_t packet[])
 }
 
 
-//void makeDhcpRequestPacket(uint8_t packet[])
-//{
-//    etherFrame* ether = (etherFrame*)packet;
-//    ipFrame* ip = (ipFrame*)&ether->data;
-//    udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
-//    dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
+void makeDhcpRequestPacket(uint8_t packet[])
+{
+    etherFrame* ether = (etherFrame*)packet;
+    ipFrame* ip = (ipFrame*)&ether->data;
+    udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
+    dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
+
+    uint8_t i;
+    uint16_t udpSize =250;
+    uint16_t tmp16;
 //
-//    uint8_t i;
-//    uint16_t udpSize =250;
-//    uint16_t tmp16;
-////
-//
-//    etherGetMacAddress(&ether->sourceAddress[0]);
-//    ether->frameType = htons(0x0800);
-//    for (i = 0; i < 6; i++)
-//        ether->destAddress[i] = 0xFF;
-//
-//    ip->revSize = 0x45;
-//    ip->length = htons(328);
-//    ip->ttl = 128;
-//    ip->protocol = 17;
-//    for (i = 0; i < 4; i++)
-//    {
-//        ip->destIp[i] = 255;
-//        ip->sourceIp[i] = 0;
-//        dhcp->yiaddr[i] = 0;
-//    }
-//
-//    udp->sourcePort = htons(68);
-//    udp->destPort = htons(67);
-//    udp->length = htons(308);
-//
-//
-//    dhcp->op = 1;
-//    dhcp->htype = 1;
-//    dhcp->hlen = 6;
-//
-//    etherGetMacAddress(&dhcp->chaddr[0]);
-//    dhcp->magicCookie = (htons(0x5363) << 16)+htons(0x6382);
-//
-//    dhcp->options[0] = 0x35;
-//    dhcp->options[1] = 0x01;
-//    dhcp->options[2] = 0x03;
-//    dhcp->options[3] = 54;
-//    dhcp->options[4] = 0x04;
-//    dhcp->options[5] = dhcp->siaddr[0];
-//    dhcp->options[6] = dhcp->siaddr[1];
-//    dhcp->options[7] = dhcp->siaddr[2];
-//    dhcp->options[8] = dhcp->siaddr[3];
-//    dhcp->options[9] = 0xff;
-//
-//
-//
-////ip header size + udp header size + dhcp packet size
-//    ip->length = htons(((ip->revSize & 0xF) * 4) + 8 + udpSize);
-//    // 32-bit sum over ip header
-//    sum = 0;
-//    etherSumWords(&ip->revSize, 10);
-//    etherSumWords(ip->sourceIp, ((ip->revSize & 0xF) * 4) - 12);
-//    ip->headerChecksum = getEtherChecksum();
-//    udp->length = htons(8 + udpSize);  //vikram - udp frame + dhcp packet size
-//    // 32-bit sum over pseudo-header
-//    sum = 0;
-//    etherSumWords(ip->sourceIp, 8);
-//    tmp16 = ip->protocol;
-//    sum += (tmp16 & 0xff) << 8;
-//    etherSumWords(&udp->length, 2);
-//    // add udp header except crc
-//    etherSumWords(udp, 6);
-//    etherSumWords(&udp->data, udpSize);
-//    udp->check = getEtherChecksum();
-//
-//    // send packet with size = ether + udp hdr + ip header + udp_size
-//    etherPutPacket(ether, 22 + ((ip->revSize & 0xF) * 4) + udpSize);
-//}
+
+    etherGetMacAddress(&ether->sourceAddress[0]);
+    ether->frameType = htons(0x0800);
+    for (i = 0; i < 6; i++)
+        ether->destAddress[i] = 0xFF;
+
+    ip->revSize = 0x45;
+    ip->length = htons(328);
+    ip->ttl = 128;
+    ip->protocol = 17;
+    for (i = 0; i < 4; i++)
+    {
+        ip->destIp[i] = 255;
+        ip->sourceIp[i] = 0;
+        dhcp->yiaddr[i] = 0;
+    }
+
+    udp->sourcePort = htons(68);
+    udp->destPort = htons(67);
+    udp->length = htons(308);
+
+
+    dhcp->op = 1;
+    dhcp->htype = 1;
+    dhcp->hlen = 6;
+
+    etherGetMacAddress(&dhcp->chaddr[0]);
+    dhcp->magicCookie = (htons(0x5363) << 16)+htons(0x6382);
+
+    dhcp->options[0] = 0x35;
+    dhcp->options[1] = 0x01;
+    dhcp->options[2] = 0x03;
+    dhcp->options[3] = 54;
+    dhcp->options[4] = 0x04;
+    dhcp->options[5] = dhcp->siaddr[0];
+    dhcp->options[6] = dhcp->siaddr[1];
+    dhcp->options[7] = dhcp->siaddr[2];
+    dhcp->options[8] = dhcp->siaddr[3];
+    dhcp->options[9] = 0xff;
+
+
+
+//ip header size + udp header size + dhcp packet size
+    ip->length = htons(((ip->revSize & 0xF) * 4) + 8 + udpSize);
+    // 32-bit sum over ip header
+    sum = 0;
+    etherSumWords(&ip->revSize, 10);
+    etherSumWords(ip->sourceIp, ((ip->revSize & 0xF) * 4) - 12);
+    ip->headerChecksum = getEtherChecksum();
+    udp->length = htons(8 + udpSize);  //vikram - udp frame + dhcp packet size
+    // 32-bit sum over pseudo-header
+    sum = 0;
+    etherSumWords(ip->sourceIp, 8);
+    tmp16 = ip->protocol;
+    sum += (tmp16 & 0xff) << 8;
+    etherSumWords(&udp->length, 2);
+    // add udp header except crc
+    etherSumWords(udp, 6);
+    etherSumWords(&udp->data, udpSize);
+    udp->check = getEtherChecksum();
+
+    // send packet with size = ether + udp hdr + ip header + udp_size
+    etherPutPacket(ether, 22 + ((ip->revSize & 0xF) * 4) + udpSize);
+}
+
+
+    void flash()
+    {
+        putsUart0("\nGOT DHCP OFFER\n");
+    }
 
 
 //uint32_t acceptDhcp(uint8_t packet[])

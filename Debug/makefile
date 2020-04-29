@@ -17,6 +17,7 @@ ORDERED_OBJS += \
 "./gpio.obj" \
 "./spi0.obj" \
 "./terminal.obj" \
+"./timer.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./uart0.obj" \
 "./wait.obj" \
@@ -163,8 +164,8 @@ Project1_improved.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "commands.obj" "dhcp.obj" "eth0.obj" "ethernet.obj" "gpio.obj" "spi0.obj" "terminal.obj" "tm4c123gh6pm_startup_ccs.obj" "uart0.obj" "wait.obj" 
-	-$(RM) "commands.d" "dhcp.d" "eth0.d" "ethernet.d" "gpio.d" "spi0.d" "terminal.d" "tm4c123gh6pm_startup_ccs.d" "uart0.d" "wait.d" 
+	-$(RM) "commands.obj" "dhcp.obj" "eth0.obj" "ethernet.obj" "gpio.obj" "spi0.obj" "terminal.obj" "timer.obj" "tm4c123gh6pm_startup_ccs.obj" "uart0.obj" "wait.obj" 
+	-$(RM) "commands.d" "dhcp.d" "eth0.d" "ethernet.d" "gpio.d" "spi0.d" "terminal.d" "timer.d" "tm4c123gh6pm_startup_ccs.d" "uart0.d" "wait.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

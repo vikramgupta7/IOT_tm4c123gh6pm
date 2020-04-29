@@ -29,6 +29,11 @@
   uint8_t options[0];
 } dhcpFrame;
 
+void (*dhcpState)();
+
 void makeDhcpDiscoverPacket(uint8_t packet[]);
+uint8_t etherIsDhcp(uint8_t packet[]);
+void makeDhcpRequestPacket(uint8_t packet[]);
+void flash();
 
 #endif /* DHCP_H_ */

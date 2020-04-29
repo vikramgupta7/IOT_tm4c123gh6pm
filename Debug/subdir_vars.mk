@@ -16,6 +16,7 @@ C_SRCS += \
 ../gpio.c \
 ../spi0.c \
 ../terminal.c \
+../timer.c \
 ../tm4c123gh6pm_startup_ccs.c \
 ../uart0.c \
 ../wait.c 
@@ -28,6 +29,7 @@ C_DEPS += \
 ./gpio.d \
 ./spi0.d \
 ./terminal.d \
+./timer.d \
 ./tm4c123gh6pm_startup_ccs.d \
 ./uart0.d \
 ./wait.d 
@@ -40,6 +42,7 @@ OBJS += \
 ./gpio.obj \
 ./spi0.obj \
 ./terminal.obj \
+./timer.obj \
 ./tm4c123gh6pm_startup_ccs.obj \
 ./uart0.obj \
 ./wait.obj 
@@ -52,6 +55,7 @@ OBJS__QUOTED += \
 "gpio.obj" \
 "spi0.obj" \
 "terminal.obj" \
+"timer.obj" \
 "tm4c123gh6pm_startup_ccs.obj" \
 "uart0.obj" \
 "wait.obj" 
@@ -64,6 +68,7 @@ C_DEPS__QUOTED += \
 "gpio.d" \
 "spi0.d" \
 "terminal.d" \
+"timer.d" \
 "tm4c123gh6pm_startup_ccs.d" \
 "uart0.d" \
 "wait.d" 
@@ -76,6 +81,7 @@ C_SRCS__QUOTED += \
 "../gpio.c" \
 "../spi0.c" \
 "../terminal.c" \
+"../timer.c" \
 "../tm4c123gh6pm_startup_ccs.c" \
 "../uart0.c" \
 "../wait.c" 

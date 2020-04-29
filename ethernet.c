@@ -45,6 +45,8 @@
 #include "wait.h"
 #include "terminal.h"
 #include "ethernet.h"
+#include "dhcp.h"
+#include "timer.h"
 //-----------------------------------------------------------------------------
 // Main
 //-----------------------------------------------------------------------------
@@ -57,6 +59,7 @@ int main(void)
 
     // Init controller
     initHw();
+    initTimer();
 
     // Setup UART0
     initUart0();
@@ -78,6 +81,11 @@ int main(void)
     waitMicrosecond(100000);
     setPinValue(GREEN_LED, 0);
     waitMicrosecond(100000);
+
+
+    dhcpEnabled = true;
+
+
 
     // Main Loop
     // RTOS and interrupts would greatly improve this code,
@@ -135,7 +143,21 @@ int main(void)
 			                setPinValue(GREEN_LED, 0);
 						etherSendUdpResponse(data, (uint8_t*)"Received", 9);
 					}
+                }
+            }
 
+            if(etherIsDhcpEnabled())
+            {
+                if(etherIsDhcp(data)==2)
+                {
+                    putsUart0("\nGOT DHCP OFFER\n");
+                    makeDhcpRequestPacket(data);
+//                    dhcpState = initState;
+//                    startPeriodicTimer(initState,5);
+                }
+                if(etherIsDhcp(data)==3)
+                {
+                    putsUart0("\nGOT DHCP ACK\n");
                 }
             }
         }
@@ -217,5 +239,10 @@ void displayConnectionInfo()
         putsUart0("\rLink is up\n\r");
     else
         putsUart0("\rLink is down\n\r");
+}
+
+void initState()
+{
+    putsUart0("\nINIT STATE TIMER WORKING.\n");
 }
 

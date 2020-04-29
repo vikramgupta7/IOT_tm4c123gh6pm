@@ -20,7 +20,7 @@
 #define MAX_PACKET_SIZE 1522
 uint8_t data[MAX_PACKET_SIZE];
 
-
+void initHw();
 void displayConnectionInfo();
-
+void initState();
 #endif /* ETHERNET_H_ */

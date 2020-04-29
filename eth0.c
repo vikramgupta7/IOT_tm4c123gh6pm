@@ -122,7 +122,6 @@ uint8_t macAddress[HW_ADD_LENGTH] = {2,3,4,5,6,7};
 uint8_t ipAddress[IP_ADD_LENGTH] = {0,0,0,0};
 uint8_t ipSubnetMask[IP_ADD_LENGTH] = {255,255,255,0};
 uint8_t ipGwAddress[IP_ADD_LENGTH] = {0,0,0,0};
-bool    dhcpEnabled = true;
 
 //-----------------------------------------------------------------------------
 // Subroutines
