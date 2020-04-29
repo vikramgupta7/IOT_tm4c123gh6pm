@@ -1,0 +1,5 @@
+#Ignore obj binary files#
+*.obj
+
+#Ignore everything inside the debug folder#
+debug/
