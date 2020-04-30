@@ -9,6 +9,13 @@
 #include <stdint.h>
 #include "eth0.h"
 #include "dhcp.h"
+#include <stdio.h>
+#include "uart0.h"
+#include "timer.h"
+#include "ethernet.h"
+
+
+#define DHCP_STATE_MACHINE_DEBUG
 
 void makeDhcpDiscoverPacket(uint8_t packet[])
 {
@@ -220,17 +227,191 @@ void makeDhcpRequestPacket(uint8_t packet[])
     }
 
 
-//uint32_t acceptDhcp(uint8_t packet[])
-//{
-//    etherFrame* ether = (etherFrame*)packet;
-//    ipFrame* ip = (ipFrame*)&ether->data;
-//    udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
-//    dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
-//
-//    etherSetIpAddress(dhcp->yiaddr[0],dhcp->yiaddr[1],dhcp->yiaddr[2],dhcp->yiaddr[3]);
-//    etherSetIpSubnetMask(dhcp->options[5],dhcp->options[6],dhcp->options[7],dhcp->options[8]);
-//    etherSetIpGatewayAddress(dhcp->options[11], dhcp->options[12], dhcp->options[13], dhcp->options[14]);
-//    etherSetIpDnsAddress(dhcp->options[20],dhcp->options[21],dhcp->options[22],dhcp->options[23]);
-//    return ((dhcp->options[30] << 24) + (dhcp->options[31] << 16) + (dhcp->options[32] << 8) + (dhcp->options[33]));
-//}
+void acceptDhcp(uint8_t packet[])
+{
+    etherFrame* ether = (etherFrame*)packet;
+    ipFrame* ip = (ipFrame*)&ether->data;
+    udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
+    dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
 
+    etherSetIpAddress(dhcp->yiaddr[0],dhcp->yiaddr[1],dhcp->yiaddr[2],dhcp->yiaddr[3]);
+    etherSetIpSubnetMask(dhcp->options[5],dhcp->options[6],dhcp->options[7],dhcp->options[8]);
+    etherSetIpGatewayAddress(dhcp->options[11], dhcp->options[12], dhcp->options[13], dhcp->options[14]);
+    etherSetIpDnsAddress(dhcp->options[20],dhcp->options[21],dhcp->options[22],dhcp->options[23]);
+    dhcpLeaseTime = ((dhcp->options[30] << 24) + (dhcp->options[31] << 16) + (dhcp->options[32] << 8) + (dhcp->options[33]));
+}
+
+void ifconfig()
+{
+    uint8_t i;
+    char str[10];
+    uint8_t mac[6];
+    uint8_t ip[4];
+    uint8_t dns[4];
+    etherGetMacAddress(mac);
+    putsUart0("\rHW: ");
+    for (i = 0; i < 6; i++)
+    {
+        sprintf(str, "%02x", mac[i]);
+        putsUart0(str);
+        if (i < 6-1)
+            putcUart0(':');
+    }
+    putcUart0('\n');
+    etherGetIpAddress(ip);
+    putsUart0("\rIP: ");
+    for (i = 0; i < 4; i++)
+    {
+        sprintf(str, "%u", ip[i]);
+        putsUart0(str);
+        if (i < 4-1)
+            putcUart0('.');
+    }
+    if (etherIsDhcpEnabled())
+        putsUart0(" (dhcp)");
+    else
+        putsUart0(" (static)");
+    putcUart0('\n');
+    etherGetIpSubnetMask(ip);
+    putsUart0("\rSN: ");
+    for (i = 0; i < 4; i++)
+    {
+        sprintf(str, "%u", ip[i]);
+        putsUart0(str);
+        if (i < 4-1)
+            putcUart0('.');
+    }
+    putcUart0('\n');
+    etherGetIpGatewayAddress(ip);
+    putsUart0("\rGW: ");
+    for (i = 0; i < 4; i++)
+    {
+        sprintf(str, "%u", ip[i]);
+        putsUart0(str);
+        if (i < 4-1)
+            putcUart0('.');
+    }
+    putcUart0('\n');
+    etherGetIpDnsAddress(dns);
+    putsUart0("\rDNS: ");
+    for (i = 0; i < 4; i++)
+    {
+        sprintf(str, "%u", dns[i]);
+        putsUart0(str);
+        if (i < 4-1)
+            putcUart0('.');
+    }
+    putsUart0("\r\n");
+    if (etherIsDhcpEnabled())
+    {
+        sprintf(str, "%u", dhcpLeaseTime);
+        putsUart0(str);
+    }
+    putsUart0("\r\n");
+    if (etherIsLinkUp())
+        putsUart0("Link is up\n");
+    else
+        putsUart0("Link is down\n");
+}
+
+//-----------------------------------------------------------------------------
+// DHCP timer functions
+//-----------------------------------------------------------------------------
+void t1_expired()
+{
+    putsUart0("\r\nT1 Expired\n");
+    dhcpState = dhcpRenew;
+    dhcpState();
+}
+
+void t2_expired()
+{
+    putsUart0("\r\nT2 Expired\n");
+    dhcpState = dhcpRebinding;
+    dhcpState();
+}
+
+void t3_expired()
+{
+    putsUart0("\r\nT3 Expired\n");
+    dhcpState = dhcpInit;
+    dhcpState();
+}
+
+//-----------------------------------------------------------------------------
+// Call functions for state machine
+//-----------------------------------------------------------------------------
+
+void callDiscover()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nSent DHCP discover message\r\n");
+#endif
+    makeDhcpDiscoverPacket(data);
+}
+void callRequest()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nSent DHCP request message\r\n");
+#endif
+    makeDhcpRequestPacket(data);
+}
+//-----------------------------------------------------------------------------
+// DHCP state machine functions
+//-----------------------------------------------------------------------------
+
+void dhcpInit()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Init State\r\n");
+#endif
+    startPeriodicTimer(callDiscover, 10);
+}
+
+void dhcpSelecting()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Selecting State\r\n");
+#endif
+    //Write ARP code.
+    stopTimer(callDiscover);
+    dhcpState = dhcpRequesting;
+    dhcpState();
+}
+
+void dhcpRequesting()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Requesting State\r\n");
+#endif
+    callRequest();
+}
+
+void dhcpBound()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Bound State\r\n");
+#endif
+    stopTimer(callDiscover);
+    acceptDhcp(data);
+
+    startOneshotTimer(t1_expired, dhcpLeaseTime/2);
+    startOneshotTimer(t2_expired, dhcpLeaseTime*0.875);
+    startOneshotTimer(t3_expired, dhcpLeaseTime);
+}
+
+void dhcpRenew()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Renew State\r\n");
+#endif
+    callRequest();
+}
+
+void dhcpRebinding()
+{
+#ifdef DHCP_STATE_MACHINE_DEBUG
+    putsUart0("\r\nDHCP Rebinding State\r\n");
+#endif
+    startPeriodicTimer(callDiscover, 10);
+}

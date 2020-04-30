@@ -2,4 +2,4 @@
 *.obj
 
 #Ignore everything inside the debug folder#
-debug/
+Debug/

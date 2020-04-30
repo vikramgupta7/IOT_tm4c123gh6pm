@@ -122,6 +122,7 @@ uint8_t macAddress[HW_ADD_LENGTH] = {2,3,4,5,6,7};
 uint8_t ipAddress[IP_ADD_LENGTH] = {0,0,0,0};
 uint8_t ipSubnetMask[IP_ADD_LENGTH] = {255,255,255,0};
 uint8_t ipGwAddress[IP_ADD_LENGTH] = {0,0,0,0};
+uint8_t ipDnsAddress[IP_ADD_LENGTH] = {0,0,0,0};
 
 //-----------------------------------------------------------------------------
 // Subroutines
@@ -848,6 +849,23 @@ void etherGetIpGatewayAddress(uint8_t ip[4])
     uint8_t i;
     for (i = 0; i < 4; i++)
         ip[i] = ipGwAddress[i];
+}
+
+// Sets DNS address.
+void etherSetIpDnsAddress(uint8_t dns0, uint8_t dns1, uint8_t dns2, uint8_t dns3)
+{
+    ipDnsAddress[0] = dns0;
+    ipDnsAddress[1] = dns1;
+    ipDnsAddress[2] = dns2;
+    ipDnsAddress[3] = dns3;
+}
+
+// Gets DNS address.
+void etherGetIpDnsAddress(uint8_t dns[4])
+{
+    uint8_t i;
+    for (i = 0; i < 4; i++)
+        dns[i] = ipDnsAddress[i];
 }
 
 // Sets MAC address

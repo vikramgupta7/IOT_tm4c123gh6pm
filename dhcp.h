@@ -10,6 +10,9 @@
 
 #include <stdint.h>
 
+void (*dhcpState)();
+uint32_t dhcpLeaseTime;
+
  typedef struct _dhcpFrame
 {
   uint8_t op;
@@ -29,11 +32,21 @@
   uint8_t options[0];
 } dhcpFrame;
 
-void (*dhcpState)();
-
 void makeDhcpDiscoverPacket(uint8_t packet[]);
 uint8_t etherIsDhcp(uint8_t packet[]);
 void makeDhcpRequestPacket(uint8_t packet[]);
+void acceptDhcp(uint8_t packet[]);
+
+//State machine functions.
+void callDiscover();
+void dhcpInit();
+void dhcpSelecting();
+void dhcpRequesting();
+void dhcpBound();
+void dhcpRenew();
+void dhcpRebinding();
+
+void ifconfig();
 void flash();
 
 #endif /* DHCP_H_ */

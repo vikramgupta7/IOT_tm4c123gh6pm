@@ -83,8 +83,10 @@ int main(void)
     waitMicrosecond(100000);
 
 
-    dhcpEnabled = true;
-
+    etherEnableDhcpMode();
+    dhcpState = dhcpInit;
+    if(etherIsDhcpEnabled())
+        dhcpState();
 
 
     // Main Loop
@@ -148,16 +150,18 @@ int main(void)
 
             if(etherIsDhcpEnabled())
             {
-                if(etherIsDhcp(data)==2)
+                if(etherIsDhcp(data) == 2)
                 {
-                    putsUart0("\nGOT DHCP OFFER\n");
-                    makeDhcpRequestPacket(data);
-//                    dhcpState = initState;
-//                    startPeriodicTimer(initState,5);
+                    putsUart0("\r\nGOT DHCP OFFER\r\n");
+                    dhcpState = dhcpSelecting;
+                    dhcpState();
                 }
                 if(etherIsDhcp(data)==3)
                 {
-                    putsUart0("\nGOT DHCP ACK\n");
+                    putsUart0("\r\nGOT DHCP ACK\r\n");
+                    dhcpState = dhcpBound;
+                    dhcpState();
+                    ifconfig();
                 }
             }
         }
@@ -234,6 +238,7 @@ void displayConnectionInfo()
         if (i < 4-1)
             putcUart0('.');
     }
+
     putcUart0('\n');
     if (etherIsLinkUp())
         putsUart0("\rLink is up\n\r");
@@ -241,8 +246,4 @@ void displayConnectionInfo()
         putsUart0("\rLink is down\n\r");
 }
 
-void initState()
-{
-    putsUart0("\nINIT STATE TIMER WORKING.\n");
-}
 

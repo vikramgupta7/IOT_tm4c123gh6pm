@@ -156,6 +156,10 @@ void etherSetIpGatewayAddress(uint8_t ip0, uint8_t ip1, uint8_t ip2, uint8_t ip3
 void etherGetIpGatewayAddress(uint8_t ip[4]);
 void etherSetIpSubnetMask(uint8_t mask0, uint8_t mask1, uint8_t mask2, uint8_t mask3);
 void etherGetIpSubnetMask(uint8_t mask[4]);
+
+void etherSetIpDnsAddress(uint8_t dns0, uint8_t dns1, uint8_t dns2, uint8_t dns3);
+void etherGetIpDnsAddress(uint8_t dns[4]);
+
 void etherSetMacAddress(uint8_t mac0, uint8_t mac1, uint8_t mac2, uint8_t mac3, uint8_t mac4, uint8_t mac5);
 void etherGetMacAddress(uint8_t mac[6]);
 

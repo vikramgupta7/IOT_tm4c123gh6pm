@@ -71,6 +71,11 @@ bool startOneshotTimer(_callback callback, uint32_t seconds)
             fn[i] = callback;
             reload[i] = false;
         }
+        else if(fn[i]== callback)
+        {
+            ticks[i] = seconds;
+            found = true;
+        }
         i++;
     }
     return found;
@@ -82,13 +87,18 @@ bool startPeriodicTimer(_callback callback, uint32_t seconds)
     bool found = false;
     while (i < NUM_TIMERS && !found)
     {
-        found = fn[i] == NULL;
-        if (found)
+        if (fn[i] == NULL)
         {
             period[i] = seconds;
             ticks[i] = seconds;
             fn[i] = callback;
             reload[i] = true;
+            found = true;
+        }
+        else if(fn[i]== callback)
+        {
+            ticks[i] = seconds;
+            found = true;
         }
         i++;
     }
