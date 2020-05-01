@@ -15,6 +15,7 @@ C_SRCS += \
 ../ethernet.c \
 ../gpio.c \
 ../spi0.c \
+../tcp.c \
 ../terminal.c \
 ../timer.c \
 ../tm4c123gh6pm_startup_ccs.c \
@@ -28,6 +29,7 @@ C_DEPS += \
 ./ethernet.d \
 ./gpio.d \
 ./spi0.d \
+./tcp.d \
 ./terminal.d \
 ./timer.d \
 ./tm4c123gh6pm_startup_ccs.d \
@@ -41,6 +43,7 @@ OBJS += \
 ./ethernet.obj \
 ./gpio.obj \
 ./spi0.obj \
+./tcp.obj \
 ./terminal.obj \
 ./timer.obj \
 ./tm4c123gh6pm_startup_ccs.obj \
@@ -54,6 +57,7 @@ OBJS__QUOTED += \
 "ethernet.obj" \
 "gpio.obj" \
 "spi0.obj" \
+"tcp.obj" \
 "terminal.obj" \
 "timer.obj" \
 "tm4c123gh6pm_startup_ccs.obj" \
@@ -67,6 +71,7 @@ C_DEPS__QUOTED += \
 "ethernet.d" \
 "gpio.d" \
 "spi0.d" \
+"tcp.d" \
 "terminal.d" \
 "timer.d" \
 "tm4c123gh6pm_startup_ccs.d" \
@@ -80,6 +85,7 @@ C_SRCS__QUOTED += \
 "../ethernet.c" \
 "../gpio.c" \
 "../spi0.c" \
+"../tcp.c" \
 "../terminal.c" \
 "../timer.c" \
 "../tm4c123gh6pm_startup_ccs.c" \

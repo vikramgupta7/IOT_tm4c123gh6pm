@@ -53,6 +53,9 @@
 
 int main(void)
 {
+    int i = 0;
+    for(i = 0; i<MAX_PACKET_SIZE; i++)
+        data[i] = 0;
     uart_command uart_command_var ={.count = 0 }; //Variable for terminal.
     uint8_t* udpData;
 
@@ -87,6 +90,7 @@ int main(void)
     dhcpState = dhcpInit;
     if(etherIsDhcpEnabled())
         dhcpState();
+
 
 
     // Main Loop
@@ -164,6 +168,14 @@ int main(void)
                     ifconfig();
                 }
             }
+//            if(etherIsTcp(data) > 0)
+//            {
+//                if(etherIsTcp(data) == 2)
+//                {
+//                    putsUart0("\r\nTCP handshake\n");
+////                    tcpAckConReq(data);
+//                }
+//            }
         }
     }
 }

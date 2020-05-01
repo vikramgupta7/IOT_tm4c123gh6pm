@@ -15,6 +15,7 @@ commands.obj: C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/std
 commands.obj: ../uart0.h
 commands.obj: ../dhcp.h
 commands.obj: ../ethernet.h
+commands.obj: ../tm4c123gh6pm.h
 
 ../commands.c: 
 ../commands.h: 
@@ -31,3 +32,4 @@ C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdbool.h:
 ../uart0.h: 
 ../dhcp.h: 
 ../ethernet.h: 
+../tm4c123gh6pm.h: 

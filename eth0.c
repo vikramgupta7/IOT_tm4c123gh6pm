@@ -28,6 +28,7 @@
 #include "gpio.h"
 #include "spi0.h"
 #include "eth0.h"
+#include "uart0.h"
 
 // Pins
 #define CS PORTA,3
@@ -527,6 +528,14 @@ uint16_t htons(uint16_t value)
 }
 #define ntohs htons
 
+
+uint32_t htons32(uint32_t value)
+{
+    return ((value & 0xFF000000) >> 24) + ((value & 0x00FF0000) >> 8) + ((value & 0x0000FF00) << 8) + ((value & 0x000000FF) << 24);
+}
+#define ntohs32 htons32
+
+
 // Determines whether packet is IP datagram
 bool etherIsIp(uint8_t packet[])
 {
@@ -599,6 +608,7 @@ void etherSendPingResponse(uint8_t packet[])
     icmp_size -= 24; // sub ip header and icmp code, type, and check
     etherSumWords(&icmp->id, icmp_size);
     icmp->check = getEtherChecksum();
+    putsUart0("Sending ping response");
     // send packet
     etherPutPacket(ether, 14 + ntohs(ip->length));
 }

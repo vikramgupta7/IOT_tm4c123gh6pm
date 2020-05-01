@@ -10,6 +10,7 @@
 #include "uart0.h"
 #include "dhcp.h"
 #include "ethernet.h"
+#include "tm4c123gh6pm.h"
 
 #define DEBUG_COMMANDS
 
@@ -48,6 +49,7 @@ void runCommands(uart_command* uart_pointer)
 #ifdef DEBUG_COMMANDS
                 putsUart0("\r\nGot DHCP OFF command\r\n");
 #endif
+                makeDhcpRequestPacket(data);
 //                if(readEeprom(0x0) != 0xF0F0F0F0)
 //                    writeEeprom(0x0,0xF0F0F0F0);
             }
@@ -146,14 +148,14 @@ void runCommands(uart_command* uart_pointer)
 #ifdef DEBUG_COMMANDS
             putsUart0("\r\nGot IFCONFIG command\r\n");
 #endif
-//            ifconfig();
+            ifconfig();
             break;
 
         case 651:
 #ifdef DEBUG_COMMANDS
             putsUart0("\r\nGot REBOOT command\r\n");
 #endif
-//            NVIC_APINT_R = NVIC_APINT_VECTKEY | NVIC_APINT_SYSRESETREQ ;
+            NVIC_APINT_R = NVIC_APINT_VECTKEY | NVIC_APINT_SYSRESETREQ ;
             break;
         default:
             break;

@@ -132,6 +132,10 @@ uint8_t etherIsDhcp(uint8_t packet[])
     uint8_t ok;
     ok = ((ether->frameType == htons(0x0800)) && (ip->protocol == 17) && (udp->sourcePort == htons(67)) && (udp->destPort == htons(68)) && (dhcp->op == 2));
 //     && (dhcp->options[0] == 53)
+    char str[10];
+    sprintf(str, "%02x", ip->protocol);
+    putsUart0(str);
+    putsUart0("\r\n");
     if(ok == 1)
     {
         if(dhcp->options[2] == 2)
@@ -148,21 +152,24 @@ void makeDhcpRequestPacket(uint8_t packet[])
 {
     etherFrame* ether = (etherFrame*)packet;
     ipFrame* ip = (ipFrame*)&ether->data;
-    udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
+    udpFrame* udp = (udpFrame*)((uint8_t*)ip + 20);
     dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
 
     uint8_t i;
-    uint16_t udpSize =250;
+    uint16_t udpSize = 250;
     uint16_t tmp16;
 //
-
-    etherGetMacAddress(&ether->sourceAddress[0]);
-    ether->frameType = htons(0x0800);
     for (i = 0; i < 6; i++)
         ether->destAddress[i] = 0xFF;
+    etherGetMacAddress(&ether->sourceAddress[0]);
+    ether->frameType = htons(0x0800);
+
 
     ip->revSize = 0x45;
+    ip->typeOfService = 0;
     ip->length = htons(328);
+    ip->id = 0;
+    ip->flagsAndOffset = 0;
     ip->ttl = 128;
     ip->protocol = 17;
     for (i = 0; i < 4; i++)
@@ -180,9 +187,28 @@ void makeDhcpRequestPacket(uint8_t packet[])
     dhcp->op = 1;
     dhcp->htype = 1;
     dhcp->hlen = 6;
+    dhcp->hops = 0;
+    dhcp->xid = 0;
+    dhcp->secs = 0;
+    dhcp->flags = 0;
+
+    for (i = 0; i < IP_ADD_LENGTH; i++)
+    {
+        dhcp->ciaddr[i] = 0;
+        dhcp->yiaddr[i] = 0;
+        dhcp->siaddr[i] = 0;
+        dhcp->giaddr[i] = 0;
+        dhcp->chaddr[i] = 0;
+        dhcp->chaddr[i+4] = 0;
+        dhcp->chaddr[i+8] = 0;
+        dhcp->chaddr[i+12] = 0;
+    }
 
     etherGetMacAddress(&dhcp->chaddr[0]);
     dhcp->magicCookie = (htons(0x5363) << 16)+htons(0x6382);
+
+    for(i = 0; i < 192; i++)
+        dhcp->data[i] = 0;
 
     dhcp->options[0] = 0x35;
     dhcp->options[1] = 0x01;
@@ -370,9 +396,7 @@ void dhcpInit()
 
 void dhcpSelecting()
 {
-#ifdef DHCP_STATE_MACHINE_DEBUG
     putsUart0("\r\nDHCP Selecting State\r\n");
-#endif
     //Write ARP code.
     stopTimer(callDiscover);
     dhcpState = dhcpRequesting;
@@ -392,7 +416,6 @@ void dhcpBound()
 #ifdef DHCP_STATE_MACHINE_DEBUG
     putsUart0("\r\nDHCP Bound State\r\n");
 #endif
-    stopTimer(callDiscover);
     acceptDhcp(data);
 
     startOneshotTimer(t1_expired, dhcpLeaseTime/2);

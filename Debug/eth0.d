@@ -15,6 +15,7 @@ eth0.obj: ../wait.h
 eth0.obj: ../gpio.h
 eth0.obj: ../spi0.h
 eth0.obj: ../eth0.h
+eth0.obj: ../uart0.h
 
 ../eth0.c: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdint.h: 
@@ -31,3 +32,4 @@ C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdbool.h:
 ../gpio.h: 
 ../spi0.h: 
 ../eth0.h: 
+../uart0.h: 
