@@ -14,6 +14,7 @@ C_SRCS += \
 ../eth0.c \
 ../ethernet.c \
 ../gpio.c \
+../mqtt.c \
 ../spi0.c \
 ../tcp.c \
 ../terminal.c \
@@ -28,6 +29,7 @@ C_DEPS += \
 ./eth0.d \
 ./ethernet.d \
 ./gpio.d \
+./mqtt.d \
 ./spi0.d \
 ./tcp.d \
 ./terminal.d \
@@ -42,6 +44,7 @@ OBJS += \
 ./eth0.obj \
 ./ethernet.obj \
 ./gpio.obj \
+./mqtt.obj \
 ./spi0.obj \
 ./tcp.obj \
 ./terminal.obj \
@@ -56,6 +59,7 @@ OBJS__QUOTED += \
 "eth0.obj" \
 "ethernet.obj" \
 "gpio.obj" \
+"mqtt.obj" \
 "spi0.obj" \
 "tcp.obj" \
 "terminal.obj" \
@@ -70,6 +74,7 @@ C_DEPS__QUOTED += \
 "eth0.d" \
 "ethernet.d" \
 "gpio.d" \
+"mqtt.d" \
 "spi0.d" \
 "tcp.d" \
 "terminal.d" \
@@ -84,6 +89,7 @@ C_SRCS__QUOTED += \
 "../eth0.c" \
 "../ethernet.c" \
 "../gpio.c" \
+"../mqtt.c" \
 "../spi0.c" \
 "../tcp.c" \
 "../terminal.c" \

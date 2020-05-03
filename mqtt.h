@@ -1,18 +1,15 @@
 /*
- * tcp.h
+ * mqtt.h
  *
- *  Created on: Apr 30, 2020
+ *  Created on: May 2, 2020
  *      Author: Vikram's ThinkPad
  */
 
-#ifndef TCP_H_
-#define TCP_H_
+#ifndef MQTT_H_
+#define MQTT_H_
 
-#include <stdint.h>
 
-void (*tcpState)();
-
-typedef struct _tcpFrame
+typedef struct _mqttFrame
 {
     uint16_t sourcePort;
     uint16_t destinationPort;
@@ -27,11 +24,4 @@ typedef struct _tcpFrame
 } tcpFrame;
 
 
-void tcpAckConReq(uint8_t packet[]);
-uint8_t etherIsTcp(uint8_t packet[]);
-void tcpListen();
-void tcpSynRecieved();
-void tcpEstablished();
-
-
-#endif /* TCP_H_ */
+#endif /* MQTT_H_ */

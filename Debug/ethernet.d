@@ -25,6 +25,7 @@ ethernet.obj: ../terminal.h
 ethernet.obj: ../ethernet.h
 ethernet.obj: ../dhcp.h
 ethernet.obj: ../timer.h
+ethernet.obj: ../tcp.h
 
 ../ethernet.c: 
 C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/stdint.h: 
@@ -51,3 +52,4 @@ C:/ti/ccs930/ccs/tools/compiler/ti-cgt-arm_18.12.4.LTS/include/string.h:
 ../ethernet.h: 
 ../dhcp.h: 
 ../timer.h: 
+../tcp.h: 

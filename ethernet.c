@@ -47,6 +47,7 @@
 #include "ethernet.h"
 #include "dhcp.h"
 #include "timer.h"
+#include "tcp.h"
 //-----------------------------------------------------------------------------
 // Main
 //-----------------------------------------------------------------------------
@@ -120,6 +121,7 @@ int main(void)
             // Handle ARP request
             if (etherIsArpRequest(data))
             {
+                putsUart0("GOT ARP PACKET");
                 etherSendArpResponse(data);
             }
 
@@ -131,6 +133,7 @@ int main(void)
             		// handle icmp ping request
 					if (etherIsPingRequest(data))
 					{
+					    putsUart0("GOT PING PACKET");
 					  etherSendPingResponse(data);
 					}
 
@@ -142,6 +145,7 @@ int main(void)
                     // sudo sendip -p ipv4 -is 192.168.1.198 -p udp -ud 1024 -d "off" 192.168.1.199
 					if (etherIsUdp(data))
 					{
+					    putsUart0("GOT UDP PACKET");
 						udpData = etherGetUdpData(data);
 						if (strcmp((char*)udpData, "on") == 0)
 			                setPinValue(GREEN_LED, 1);
@@ -154,13 +158,14 @@ int main(void)
 
             if(etherIsDhcpEnabled())
             {
-                if(etherIsDhcp(data) == 2)
+                uint8_t dhcpReply = etherIsDhcp(data);
+                if(dhcpReply == 2)
                 {
                     putsUart0("\r\nGOT DHCP OFFER\r\n");
                     dhcpState = dhcpSelecting;
                     dhcpState();
                 }
-                if(etherIsDhcp(data)==3)
+                else if(dhcpReply == 3)
                 {
                     putsUart0("\r\nGOT DHCP ACK\r\n");
                     dhcpState = dhcpBound;
@@ -168,15 +173,29 @@ int main(void)
                     ifconfig();
                 }
             }
-//            if(etherIsTcp(data) > 0)
-//            {
-//                if(etherIsTcp(data) == 2)
-//                {
-//                    putsUart0("\r\nTCP handshake\n");
-////                    tcpAckConReq(data);
-//                }
-//            }
+            uint8_t tcpReply = etherIsTcp(data);
+            if(tcpReply == 2)
+            {
+                putsUart0("\r\nSYN Recieved\n");
+                tcpState = tcpSynRecieved;
+                tcpState();
+            }
+            else if(tcpReply == 3)
+            {
+                putsUart0("\r\nACK Recieved. Established State\n");
+                tcpState = tcpEstablished;
+                tcpState();
+            }
+            if(tcpState == tcpEstablished)
+            {
+                if(tcpReply == 4)
+                {
+                    putsUart0("GOT DATA");
+                    tcpAcknowledge(data);
+                }
+            }
         }
+
     }
 }
 

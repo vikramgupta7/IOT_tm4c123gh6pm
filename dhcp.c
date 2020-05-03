@@ -130,8 +130,12 @@ uint8_t etherIsDhcp(uint8_t packet[])
     udpFrame* udp = (udpFrame*)((uint8_t*)ip + ((ip->revSize & 0xF) * 4));
     dhcpFrame* dhcp = (dhcpFrame*)&udp->data;
     uint8_t ok;
-    ok = ((ether->frameType == htons(0x0800)) && (ip->protocol == 17) && (udp->sourcePort == htons(67)) && (udp->destPort == htons(68)) && (dhcp->op == 2));
-//     && (dhcp->options[0] == 53)
+
+    uint16_t sourcePort = htons(67);
+    uint16_t destinationPort = htons(68);
+
+    ok = ((ether->frameType == htons(0x0800)) && (ip->protocol == 17) && (udp->sourcePort == htons(67)) && (udp->destPort == htons(68) && (dhcp->op == 2)));
+//   && (dhcp->options[0] == 53)
     char str[10];
     sprintf(str, "%02x", ip->protocol);
     putsUart0(str);
